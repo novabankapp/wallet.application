@@ -1,0 +1,8 @@
+github.com/novabankapp/common.infrastructure v1.3.0 h1:f0Cqt4KxH379rgu8/Nj1UrloyuWzPJ32StSCylI6Bzc=
+github.com/novabankapp/common.infrastructure v1.3.0/go.mod h1:keXyqMSGSCBvKz2za3HgIKQ8l0ZQpU26xt42ZCEXiys=
+github.com/novabankapp/wallet.data v0.0.0-20220610105446-465798e8d4c6 h1:MEfdBGPZRV+O8lYCMXZqdm9KIgOIngYFRzyi6qTLyQ4=
+github.com/novabankapp/wallet.data v0.0.0-20220610105446-465798e8d4c6/go.mod h1:7Cn/Qi2bnDS2lO+i3VlHanpwogM4y7H3JXP5bsNB11E=
+github.com/novabankapp/wallet.data v1.1.0 h1:t/jUx6q4zPwkg6hrpccp51Jx0BmSve+BgxAzs3YMxYw=
+github.com/novabankapp/wallet.data v1.1.0/go.mod h1:cBGIYXepUC8Yu9GbVf8MMMhbyhq5Qvc6q2Inaj2ix7E=
+github.com/shopspring/decimal v1.3.1 h1:2Usl1nmF/WZucqkFZhnfFYxxxu8LG21F6nPQBE5gKV8=
+github.com/shopspring/decimal v1.3.1/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
