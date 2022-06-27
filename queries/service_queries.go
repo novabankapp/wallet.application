@@ -1,10 +1,16 @@
 package queries
 
 type WalletQueries struct {
-	//GetOrderByID GetOrderByIDQueryHandler
+	GetWalletByID GetWalletByIDQueryHandler
 	//SearchOrders SearchOrdersQueryHandler
 }
 
-func NewWalletQueries() *WalletQueries {
-	return &WalletQueries{}
+func NewWalletQueries(getWalletByID GetWalletByIDQueryHandler) *WalletQueries {
+	return &WalletQueries{
+		GetWalletByID: getWalletByID,
+	}
+}
+
+type GetWalletByIDQuery struct {
+	ID string
 }

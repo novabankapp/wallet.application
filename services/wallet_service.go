@@ -26,13 +26,14 @@ func NewWalletService(
 
 	createWalletHandler := commands.NewCreateWalletHandler(log, cfg, es)
 
-	//getOrderByIDHandler := queries.NewGetOrderByIDHandler(log, cfg, es, mongoRepo)
-	//searchOrdersHandler := queries.NewSearchOrdersHandler(log, cfg, es, elasticRepository)
+	getWalletByIDHandler := queries.NewGetWalletByIDHandler(log, cfg, es, repo)
 
 	walletCommands := internal.NewWalletCommands(
 		createWalletHandler,
 	)
-	orderQueries := queries.NewWalletQueries( /*getOrderByIDHandler, searchOrdersHandler*/)
+	orderQueries := queries.NewWalletQueries(
+		getWalletByIDHandler,
+	)
 
 	return &WalletService{Commands: walletCommands, Queries: orderQueries}
 }
