@@ -21,7 +21,7 @@ func NewWalletService(
 	cfg *config.Config,
 	es es.AggregateStore,
 	repo base.NoSqlRepository[models.WalletProjection],
-//elasticRepository repository.ElasticOrderRepository,
+	//elasticRepository repository.ElasticOrderRepository,
 ) *WalletService {
 
 	createWalletHandler := commands.NewCreateWalletHandler(log, cfg, es)

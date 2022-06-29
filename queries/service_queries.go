@@ -1,8 +1,8 @@
 package queries
 
 type WalletQueries struct {
-	GetWalletByID GetWalletByIDQueryHandler
-	//SearchOrders SearchOrdersQueryHandler
+	GetWalletByID      GetWalletByIDQueryHandler
+	GetUserWalletsByID GetUserWalletsByIDQueryHandler
 }
 
 func NewWalletQueries(getWalletByID GetWalletByIDQueryHandler) *WalletQueries {
@@ -13,4 +13,8 @@ func NewWalletQueries(getWalletByID GetWalletByIDQueryHandler) *WalletQueries {
 
 type GetWalletByIDQuery struct {
 	ID string
+}
+
+type GetUserWalletsByIDQuery struct {
+	UserID string
 }
