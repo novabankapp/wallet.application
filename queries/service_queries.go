@@ -5,9 +5,10 @@ type WalletQueries struct {
 	GetUserWalletsByID GetUserWalletsByIDQueryHandler
 }
 
-func NewWalletQueries(getWalletByID GetWalletByIDQueryHandler) *WalletQueries {
+func NewWalletQueries(getWalletByID GetWalletByIDQueryHandler, getUserWallets GetUserWalletsByIDQueryHandler) *WalletQueries {
 	return &WalletQueries{
-		GetWalletByID: getWalletByID,
+		GetWalletByID:      getWalletByID,
+		GetUserWalletsByID: getUserWallets,
 	}
 }
 

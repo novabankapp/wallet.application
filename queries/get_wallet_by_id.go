@@ -5,6 +5,7 @@ import (
 	es "github.com/novabankapp/common.data/eventstore"
 	"github.com/novabankapp/common.data/repositories/base"
 	"github.com/novabankapp/common.infrastructure/logger"
+	"github.com/novabankapp/wallet.application/internal/dtos"
 	"github.com/novabankapp/wallet.application/mappers"
 	"github.com/novabankapp/wallet.data/es/aggregate"
 	"github.com/novabankapp/wallet.data/es/models"
@@ -14,7 +15,7 @@ import (
 )
 
 type GetWalletByIDQueryHandler interface {
-	Handle(ctx context.Context, command *GetWalletByIDQuery) (*models.WalletProjection, error)
+	Handle(ctx context.Context, command *GetWalletByIDQuery) (*dtos.WalletProjectionDto, error)
 }
 
 type getWalletByIDHandler struct {
@@ -24,38 +25,42 @@ type getWalletByIDHandler struct {
 	repo base.NoSqlRepository[models.WalletProjection]
 }
 
-func NewGetWalletByIDHandler(log logger.Logger, cfg *config.Config, es es.AggregateStore, repo base.NoSqlRepository[models.WalletProjection]) *getWalletByIDHandler {
+func NewGetWalletByIDHandler(log logger.Logger, cfg *config.Config,
+	es es.AggregateStore,
+	repo base.NoSqlRepository[models.WalletProjection]) *getWalletByIDHandler {
 	return &getWalletByIDHandler{log: log, cfg: cfg, es: es, repo: repo}
 }
 
-func (q *getWalletByIDHandler) Handle(ctx context.Context, query *GetWalletByIDQuery) (*models.WalletProjection, error) {
+func (q *getWalletByIDHandler) Handle(ctx context.Context, query *GetWalletByIDQuery) (*dtos.WalletProjectionDto, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "getWalletByIDHandler.Handle")
 	defer span.Finish()
 	span.LogFields(log.String("AggregateID", query.ID))
-
+	var walletProjection *models.WalletProjection
 	walletProjection, err := q.repo.GetById(ctx, query.ID)
 	if err != nil {
 		return nil, err
 	}
 	if walletProjection != nil {
-		return walletProjection, nil
+		dto := mappers.WalletProjectionDtoFromProjection(*walletProjection)
+		return &dto, nil
 	}
 
-	wallet := aggregate.NewWalletAggregateWithID(query.ID)
-	if err := q.es.Load(ctx, wallet); err != nil {
+	walletAgg := aggregate.NewWalletAggregateWithID(query.ID)
+	if err := q.es.Load(ctx, walletAgg); err != nil {
 		return nil, err
 	}
 
-	if aggregate.IsAggregateNotFound(wallet) {
+	if aggregate.IsAggregateNotFound(walletAgg) {
 		return nil, aggregate.ErrOrderNotFound
 	}
 
-	walletProjection = mappers.WalletProjectionFromAggregate(wallet)
+	walletProjection = mappers.WalletProjectionFromAggregate(walletAgg)
 
 	_, err = q.repo.Create(ctx, *walletProjection)
 	if err != nil {
 		return nil, err
 	}
 
-	return walletProjection, nil
+	dto := mappers.WalletProjectionDtoFromProjection(*walletProjection)
+	return &dto, nil
 }

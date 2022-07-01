@@ -5,13 +5,16 @@ import (
 	es "github.com/novabankapp/common.data/eventstore"
 	"github.com/novabankapp/common.data/repositories/base"
 	"github.com/novabankapp/common.infrastructure/logger"
+	"github.com/novabankapp/wallet.application/internal/dtos"
+	"github.com/novabankapp/wallet.application/mappers"
 	"github.com/novabankapp/wallet.data/es/models"
 	"github.com/olivere/elastic/v7/config"
 	"github.com/opentracing/opentracing-go"
 )
 
 type GetUserWalletsByIDQueryHandler interface {
-	Handle(ctx context.Context, command *GetWalletByIDQuery) (*models.WalletProjection, error)
+	Handle(ctx context.Context,
+		query *GetUserWalletsByIDQuery, pageSize int, page []byte) (results *[]dtos.WalletProjectionDto, pageState []byte, error error)
 }
 
 type getUserWalletsByIDQueryHandler struct {
@@ -27,7 +30,8 @@ func NewGetUserWalletsByIDQueryHandler(log logger.Logger,
 	return &getUserWalletsByIDQueryHandler{log: log, cfg: cfg, es: es, repo: repo}
 }
 
-func (q *getUserWalletsByIDQueryHandler) Handle(ctx context.Context, query *GetUserWalletsByIDQuery, pageSize int, page []byte) (results *[]models.WalletProjection, pageState []byte, error error) {
+func (q *getUserWalletsByIDQueryHandler) Handle(ctx context.Context,
+	query *GetUserWalletsByIDQuery, pageSize int, page []byte) (results *[]dtos.WalletProjectionDto, pageState []byte, error error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "getUserWalletsByIDHandler.Handle")
 	defer span.Finish()
 
@@ -38,6 +42,16 @@ func (q *getUserWalletsByIDQueryHandler) Handle(ctx context.Context, query *GetU
 	m["value"] = query.UserID
 	queries = append(queries, m)
 
-	return q.repo.Get(ctx, page, pageSize, queries)
+	walletProjections, pageState, err := q.repo.Get(ctx, page, pageSize, queries)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var result []dtos.WalletProjectionDto
+	for _, el := range *walletProjections {
+		dto := mappers.WalletProjectionDtoFromProjection(el)
+		result = append(result, dto)
+	}
+	return &result, pageState, nil
 
 }

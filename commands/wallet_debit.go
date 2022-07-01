@@ -13,22 +13,22 @@ import (
 	"github.com/opentracing/opentracing-go/log"
 )
 
-type CreateWalletCommandHandler interface {
-	Handle(ctx context.Context, command *internal.CreateWalletCommand) error
+type DebitWalletCommandHandler interface {
+	Handle(ctx context.Context, command *internal.DebitWalletCommand) error
 }
 
-type createWalletHandler struct {
+type debitWalletHandler struct {
 	log logger.Logger
 	cfg *config.Config
 	es  es.AggregateStore
 }
 
-func NewCreateWalletHandler(log logger.Logger, cfg *config.Config, es es.AggregateStore) *createWalletHandler {
-	return &createWalletHandler{log: log, cfg: cfg, es: es}
+func NewDebitWalletHandler(log logger.Logger, cfg *config.Config, es es.AggregateStore) *debitWalletHandler {
+	return &debitWalletHandler{log: log, cfg: cfg, es: es}
 }
 
-func (c *createWalletHandler) Handle(ctx context.Context, command *internal.CreateWalletCommand) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "createWalletHandler.Handle")
+func (c *debitWalletHandler) Handle(ctx context.Context, command *internal.DebitWalletCommand) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "debitWalletHandler.Handle")
 	defer span.Finish()
 	span.LogFields(log.String("AggregateID", command.GetAggregateID()))
 
@@ -38,13 +38,11 @@ func (c *createWalletHandler) Handle(ctx context.Context, command *internal.Crea
 		return err
 	}
 
-	if err := wallet.CreateWallet(
+	if err := wallet.DebitWallet(
 		ctx,
-		command.WalletDetails.Amount,
-		command.WalletDetails.Description,
-		command.WalletDetails.UserId,
-		command.WalletDetails.AccountId,
-		command.WalletDetails.Id,
+		command.CreditWalletID,
+		command.Amount,
+		command.Description,
 	); err != nil {
 		return err
 	}

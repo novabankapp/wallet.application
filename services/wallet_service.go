@@ -21,19 +21,36 @@ func NewWalletService(
 	cfg *config.Config,
 	es es.AggregateStore,
 	repo base.NoSqlRepository[models.WalletProjection],
-	//elasticRepository repository.ElasticOrderRepository,
+//elasticRepository repository.ElasticOrderRepository,
 ) *WalletService {
 
 	createWalletHandler := commands.NewCreateWalletHandler(log, cfg, es)
+	lockWalletHandler := commands.NewLockWalletHandler(log, cfg, es)
+	unlockWalletHandler := commands.NewUnlockWalletHandler(log, cfg, es)
+	blockWalletHandler := commands.NewBlockWalletHandler(log, cfg, es)
+	unblockWalletHandler := commands.NewUnblockWalletHandler(log, cfg, es)
+	deleteWalletHandler := commands.NewDeleteWalletHandler(log, cfg, es)
+	debitWalletHandler := commands.NewDebitWalletHandler(log, cfg, es)
+	creditWalletHandler := commands.NewCreditWalletHandler(log, cfg, es)
 
 	getWalletByIDHandler := queries.NewGetWalletByIDHandler(log, cfg, es, repo)
+	getUserWalletsHandler := queries.NewGetUserWalletsByIDQueryHandler(log, cfg, es, repo)
 
 	walletCommands := internal.NewWalletCommands(
 		createWalletHandler,
-	)
-	orderQueries := queries.NewWalletQueries(
-		getWalletByIDHandler,
+		lockWalletHandler,
+		unlockWalletHandler,
+		blockWalletHandler,
+		unblockWalletHandler,
+		deleteWalletHandler,
+		debitWalletHandler,
+		creditWalletHandler,
 	)
 
-	return &WalletService{Commands: walletCommands, Queries: orderQueries}
+	walletQueries := queries.NewWalletQueries(
+		getWalletByIDHandler,
+		getUserWalletsHandler,
+	)
+
+	return &WalletService{Commands: walletCommands, Queries: walletQueries}
 }

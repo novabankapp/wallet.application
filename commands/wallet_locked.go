@@ -13,22 +13,22 @@ import (
 	"github.com/opentracing/opentracing-go/log"
 )
 
-type CreateWalletCommandHandler interface {
-	Handle(ctx context.Context, command *internal.CreateWalletCommand) error
+type LockWalletCommandHandler interface {
+	Handle(ctx context.Context, command *internal.LockWalletCommand) error
 }
 
-type createWalletHandler struct {
+type lockWalletHandler struct {
 	log logger.Logger
 	cfg *config.Config
 	es  es.AggregateStore
 }
 
-func NewCreateWalletHandler(log logger.Logger, cfg *config.Config, es es.AggregateStore) *createWalletHandler {
-	return &createWalletHandler{log: log, cfg: cfg, es: es}
+func NewLockWalletHandler(log logger.Logger, cfg *config.Config, es es.AggregateStore) *lockWalletHandler {
+	return &lockWalletHandler{log: log, cfg: cfg, es: es}
 }
 
-func (c *createWalletHandler) Handle(ctx context.Context, command *internal.CreateWalletCommand) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "createWalletHandler.Handle")
+func (c *lockWalletHandler) Handle(ctx context.Context, command *internal.LockWalletCommand) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "lockWalletHandler.Handle")
 	defer span.Finish()
 	span.LogFields(log.String("AggregateID", command.GetAggregateID()))
 
@@ -38,13 +38,9 @@ func (c *createWalletHandler) Handle(ctx context.Context, command *internal.Crea
 		return err
 	}
 
-	if err := wallet.CreateWallet(
+	if err := wallet.LockWallet(
 		ctx,
-		command.WalletDetails.Amount,
-		command.WalletDetails.Description,
-		command.WalletDetails.UserId,
-		command.WalletDetails.AccountId,
-		command.WalletDetails.Id,
+		command.Description,
 	); err != nil {
 		return err
 	}
