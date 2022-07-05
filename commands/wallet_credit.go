@@ -6,7 +6,7 @@ import (
 	"github.com/EventStore/EventStore-Client-Go/esdb"
 	es "github.com/novabankapp/common.data/eventstore"
 	"github.com/novabankapp/common.infrastructure/logger"
-	"github.com/novabankapp/wallet.application/internal"
+	"github.com/novabankapp/wallet.data/constants"
 	"github.com/novabankapp/wallet.data/es/aggregate"
 	"github.com/olivere/elastic/v7/config"
 	"github.com/opentracing/opentracing-go"
@@ -14,7 +14,7 @@ import (
 )
 
 type CreditWalletCommandHandler interface {
-	Handle(ctx context.Context, command *internal.CreditWalletCommand) error
+	Handle(ctx context.Context, command *CreditWalletCommand) error
 }
 
 type creditWalletHandler struct {
@@ -27,20 +27,25 @@ func NewCreditWalletHandler(log logger.Logger, cfg *config.Config, es es.Aggrega
 	return &creditWalletHandler{log: log, cfg: cfg, es: es}
 }
 
-func (c *creditWalletHandler) Handle(ctx context.Context, command *internal.CreditWalletCommand) error {
+func (c *creditWalletHandler) Handle(ctx context.Context, command *CreditWalletCommand) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "creditWalletHandler.Handle")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", command.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, command.GetAggregateID()))
 
 	wallet := aggregate.NewWalletAggregateWithID(command.AggregateID)
+	debitWallet := aggregate.NewWalletAggregateWithID(command.DebitWalletAggregateID)
 	err := c.es.Exists(ctx, wallet.GetID())
+	if err != nil && !errors.Is(err, esdb.ErrStreamNotFound) {
+		return err
+	}
+	err = c.es.Exists(ctx, debitWallet.GetID())
 	if err != nil && !errors.Is(err, esdb.ErrStreamNotFound) {
 		return err
 	}
 
 	if err := wallet.CreditWallet(
 		ctx,
-		command.DebitWalletID,
+		debitWallet.Wallet.ID,
 		command.Amount,
 		command.Description,
 	); err != nil {

@@ -6,7 +6,7 @@ import (
 	"github.com/EventStore/EventStore-Client-Go/esdb"
 	es "github.com/novabankapp/common.data/eventstore"
 	"github.com/novabankapp/common.infrastructure/logger"
-	"github.com/novabankapp/wallet.application/internal"
+	"github.com/novabankapp/wallet.data/constants"
 	"github.com/novabankapp/wallet.data/es/aggregate"
 	"github.com/olivere/elastic/v7/config"
 	"github.com/opentracing/opentracing-go"
@@ -14,7 +14,7 @@ import (
 )
 
 type BlockWalletCommandHandler interface {
-	Handle(ctx context.Context, command *internal.BlockWalletCommand) error
+	Handle(ctx context.Context, command *BlockWalletCommand) error
 }
 
 type blockWalletHandler struct {
@@ -27,10 +27,10 @@ func NewBlockWalletHandler(log logger.Logger, cfg *config.Config, es es.Aggregat
 	return &blockWalletHandler{log: log, cfg: cfg, es: es}
 }
 
-func (c *blockWalletHandler) Handle(ctx context.Context, command *internal.BlockWalletCommand) error {
+func (c *blockWalletHandler) Handle(ctx context.Context, command *BlockWalletCommand) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "blockWalletHandler.Handle")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", command.GetAggregateID()))
+	span.LogFields(log.String(constants.WalletID, command.GetAggregateID()))
 
 	wallet := aggregate.NewWalletAggregateWithID(command.AggregateID)
 	err := c.es.Exists(ctx, wallet.GetID())

@@ -6,7 +6,7 @@ import (
 	"github.com/EventStore/EventStore-Client-Go/esdb"
 	es "github.com/novabankapp/common.data/eventstore"
 	"github.com/novabankapp/common.infrastructure/logger"
-	"github.com/novabankapp/wallet.application/internal"
+	"github.com/novabankapp/wallet.data/constants"
 	"github.com/novabankapp/wallet.data/es/aggregate"
 	"github.com/olivere/elastic/v7/config"
 	"github.com/opentracing/opentracing-go"
@@ -14,7 +14,7 @@ import (
 )
 
 type DeleteWalletCommandHandler interface {
-	Handle(ctx context.Context, command *internal.DeleteWalletCommand) error
+	Handle(ctx context.Context, command *DeleteWalletCommand) error
 }
 
 type deleteWalletHandler struct {
@@ -27,10 +27,10 @@ func NewDeleteWalletHandler(log logger.Logger, cfg *config.Config, es es.Aggrega
 	return &deleteWalletHandler{log: log, cfg: cfg, es: es}
 }
 
-func (c *deleteWalletHandler) Handle(ctx context.Context, command *internal.DeleteWalletCommand) error {
+func (c *deleteWalletHandler) Handle(ctx context.Context, command *DeleteWalletCommand) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "deleteWalletHandler.Handle")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", command.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, command.GetAggregateID()))
 
 	wallet := aggregate.NewWalletAggregateWithID(command.AggregateID)
 	err := c.es.Exists(ctx, wallet.GetID())

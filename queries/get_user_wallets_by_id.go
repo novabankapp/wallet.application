@@ -2,11 +2,13 @@ package queries
 
 import (
 	"context"
+	cons "github.com/novabankapp/common.data/constants"
 	es "github.com/novabankapp/common.data/eventstore"
 	"github.com/novabankapp/common.data/repositories/base"
 	"github.com/novabankapp/common.infrastructure/logger"
 	"github.com/novabankapp/wallet.application/internal/dtos"
 	"github.com/novabankapp/wallet.application/mappers"
+	"github.com/novabankapp/wallet.data/constants"
 	"github.com/novabankapp/wallet.data/es/models"
 	"github.com/olivere/elastic/v7/config"
 	"github.com/opentracing/opentracing-go"
@@ -37,9 +39,9 @@ func (q *getUserWalletsByIDQueryHandler) Handle(ctx context.Context,
 
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "UserId"
-	m["compare"] = "="
-	m["value"] = query.UserID
+	m[cons.Column] = constants.UserID
+	m[cons.Compare] = cons.Equal
+	m[cons.Value] = query.UserID
 	queries = append(queries, m)
 
 	walletProjections, pageState, err := q.repo.Get(ctx, page, pageSize, queries)

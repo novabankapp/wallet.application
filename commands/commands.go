@@ -1,4 +1,4 @@
-package internal
+package commands
 
 import (
 	es "github.com/novabankapp/common.data/eventstore"
@@ -100,32 +100,32 @@ func NewDeleteWalletCommand(aggregateID, walletID string, description string) *D
 
 type DebitWalletCommand struct {
 	es.BaseCommand
-	CreditWalletID string
-	Amount         decimal.Decimal
-	Description    string
+	CreditWalletAggregateID string
+	Amount                  decimal.Decimal
+	Description             string
 }
 
-func NewDebitWalletCommand(aggregateID, creditWalletID string, amount decimal.Decimal, description string) *DebitWalletCommand {
+func NewDebitWalletCommand(aggregateID, creditWalletAggregateID string, amount decimal.Decimal, description string) *DebitWalletCommand {
 	return &DebitWalletCommand{
-		BaseCommand:    es.NewBaseCommand(aggregateID),
-		CreditWalletID: creditWalletID,
-		Amount:         amount,
-		Description:    description,
+		BaseCommand:             es.NewBaseCommand(aggregateID),
+		CreditWalletAggregateID: creditWalletAggregateID,
+		Amount:                  amount,
+		Description:             description,
 	}
 }
 
 type CreditWalletCommand struct {
 	es.BaseCommand
-	DebitWalletID string
-	Amount        decimal.Decimal
-	Description   string
+	DebitWalletAggregateID string
+	Amount                 decimal.Decimal
+	Description            string
 }
 
-func NewCreditWalletCommand(aggregateID, debitWalletID string, amount decimal.Decimal, description string) *CreditWalletCommand {
+func NewCreditWalletCommand(aggregateID, debitWalletAggregateID string, amount decimal.Decimal, description string) *CreditWalletCommand {
 	return &CreditWalletCommand{
-		BaseCommand:   es.NewBaseCommand(aggregateID),
-		DebitWalletID: debitWalletID,
-		Amount:        amount,
-		Description:   description,
+		BaseCommand:            es.NewBaseCommand(aggregateID),
+		DebitWalletAggregateID: debitWalletAggregateID,
+		Amount:                 amount,
+		Description:            description,
 	}
 }

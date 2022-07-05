@@ -5,14 +5,13 @@ import (
 	"github.com/novabankapp/common.data/repositories/base"
 	"github.com/novabankapp/common.infrastructure/logger"
 	"github.com/novabankapp/wallet.application/commands"
-	"github.com/novabankapp/wallet.application/internal"
 	"github.com/novabankapp/wallet.application/queries"
 	"github.com/novabankapp/wallet.data/es/models"
 	"github.com/olivere/elastic/v7/config"
 )
 
 type WalletService struct {
-	Commands *internal.WalletCommands
+	Commands *commands.WalletCommands
 	Queries  *queries.WalletQueries
 }
 
@@ -21,7 +20,7 @@ func NewWalletService(
 	cfg *config.Config,
 	es es.AggregateStore,
 	repo base.NoSqlRepository[models.WalletProjection],
-//elasticRepository repository.ElasticOrderRepository,
+	//elasticRepository repository.ElasticOrderRepository,
 ) *WalletService {
 
 	createWalletHandler := commands.NewCreateWalletHandler(log, cfg, es)
@@ -36,7 +35,7 @@ func NewWalletService(
 	getWalletByIDHandler := queries.NewGetWalletByIDHandler(log, cfg, es, repo)
 	getUserWalletsHandler := queries.NewGetUserWalletsByIDQueryHandler(log, cfg, es, repo)
 
-	walletCommands := internal.NewWalletCommands(
+	walletCommands := commands.NewWalletCommands(
 		createWalletHandler,
 		lockWalletHandler,
 		unlockWalletHandler,
