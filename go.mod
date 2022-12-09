@@ -6,6 +6,7 @@ require (
 	github.com/EventStore/EventStore-Client-Go v1.0.2
 	github.com/novabankapp/common.data v1.0.2
 	github.com/novabankapp/common.infrastructure v1.3.0
+	github.com/novabankapp/common.application v1.0.0
 	github.com/novabankapp/wallet.data v1.1.0
 	github.com/olivere/elastic/v7 v7.0.32
 	github.com/opentracing/opentracing-go v1.2.0
@@ -51,5 +52,7 @@ require (
 replace github.com/novabankapp/wallet.data v1.1.0 => C:\Projects\golang\github.com\novabankapp\wallet.data
 
 replace github.com/novabankapp/common.infrastructure v1.3.0 => C:\Projects\golang\github.com\novabankapp\common.infrastructure
+
+replace github.com/novabankapp/common.application v1.0.0 => C:\Projects\golang\github.com\novabankapp\common.application
 
 replace github.com/novabankapp/common.data v1.0.2 => C:\Projects\golang\github.com\novabankapp\common.data

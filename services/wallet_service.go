@@ -1,8 +1,10 @@
 package services
 
 import (
+	"github.com/novabankapp/common.application/services/message_queue"
 	es "github.com/novabankapp/common.data/eventstore"
 	"github.com/novabankapp/common.data/repositories/base"
+	kafkaClient "github.com/novabankapp/common.infrastructure/kafka"
 	"github.com/novabankapp/common.infrastructure/logger"
 	"github.com/novabankapp/wallet.application/commands"
 	"github.com/novabankapp/wallet.application/queries"
@@ -10,15 +12,19 @@ import (
 )
 
 type WalletService struct {
-	Commands *commands.WalletCommands
-	Queries  *queries.WalletQueries
+	Commands     *commands.WalletCommands
+	Queries      *queries.WalletQueries
+	topics       *kafkaClient.KafkaTopics
+	messageQueue message_queue.MessageQueue
 }
 
 func NewWalletService(
 	log logger.Logger,
 	es es.AggregateStore,
 	repo base.NoSqlRepository[models.WalletProjection],
-	//elasticRepository repository.ElasticOrderRepository,
+	topics *kafkaClient.KafkaTopics,
+	messageQueue message_queue.MessageQueue,
+//elasticRepository repository.ElasticOrderRepository,
 ) *WalletService {
 
 	createWalletHandler := commands.NewCreateWalletHandler(log, es)
@@ -26,7 +32,7 @@ func NewWalletService(
 	unlockWalletHandler := commands.NewUnlockWalletHandler(log, es)
 	blockWalletHandler := commands.NewBlockWalletHandler(log, es)
 	unblockWalletHandler := commands.NewUnblockWalletHandler(log, es)
-	deleteWalletHandler := commands.NewDeleteWalletHandler(log, es)
+	deleteWalletHandler := commands.NewDeleteWalletHandler(log, es, topics, messageQueue)
 	debitWalletHandler := commands.NewDebitWalletHandler(log, es)
 	creditWalletHandler := commands.NewCreditWalletHandler(log, es)
 

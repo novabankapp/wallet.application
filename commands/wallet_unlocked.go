@@ -13,7 +13,7 @@ import (
 )
 
 type UnlockWalletCommandHandler interface {
-	Handle(ctx context.Context, command *LockWalletCommand) error
+	Handle(ctx context.Context, command *UnlockWalletCommand) error
 }
 
 type unlockWalletHandler struct {
@@ -21,8 +21,8 @@ type unlockWalletHandler struct {
 	es  es.AggregateStore
 }
 
-func NewUnlockWalletHandler(log logger.Logger, es es.AggregateStore) *lockWalletHandler {
-	return &lockWalletHandler{log: log, es: es}
+func NewUnlockWalletHandler(log logger.Logger, es es.AggregateStore) *unlockWalletHandler {
+	return &unlockWalletHandler{log: log, es: es}
 }
 
 func (c *unlockWalletHandler) Handle(ctx context.Context, command *UnlockWalletCommand) error {

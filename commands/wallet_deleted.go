@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/EventStore/EventStore-Client-Go/esdb"
+	"github.com/novabankapp/common.application/services/message_queue"
 	es "github.com/novabankapp/common.data/eventstore"
+	kafkaClient "github.com/novabankapp/common.infrastructure/kafka"
 	"github.com/novabankapp/common.infrastructure/logger"
 	"github.com/novabankapp/wallet.data/constants"
 	"github.com/novabankapp/wallet.data/es/aggregate"
@@ -17,12 +19,17 @@ type DeleteWalletCommandHandler interface {
 }
 
 type deleteWalletHandler struct {
-	log logger.Logger
-	es  es.AggregateStore
+	log          logger.Logger
+	es           es.AggregateStore
+	topics       *kafkaClient.KafkaTopics
+	messageQueue message_queue.MessageQueue
 }
 
-func NewDeleteWalletHandler(log logger.Logger, es es.AggregateStore) *deleteWalletHandler {
-	return &deleteWalletHandler{log: log, es: es}
+func NewDeleteWalletHandler(log logger.Logger,
+	es es.AggregateStore,
+	topics *kafkaClient.KafkaTopics,
+	messageQueue message_queue.MessageQueue) *deleteWalletHandler {
+	return &deleteWalletHandler{log: log, es: es, topics: topics, messageQueue: messageQueue}
 }
 
 func (c *deleteWalletHandler) Handle(ctx context.Context, command *DeleteWalletCommand) error {
@@ -42,6 +49,14 @@ func (c *deleteWalletHandler) Handle(ctx context.Context, command *DeleteWalletC
 	); err != nil {
 		return err
 	}
+
+	/*res := new(bytes.Buffer)
+	e := json.NewEncoder(res).Encode(userDto)
+	if e == nil {
+		msgBytes := res.Bytes()
+
+		_, err2 = c.messageQueue.PublishMessage(ctx, msgBytes, *userId, r.topics.UserCreated.TopicName)
+	}*/
 
 	span.LogFields(log.String("wallet", wallet.String()))
 	return c.es.Save(ctx, wallet)
