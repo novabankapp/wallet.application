@@ -8,7 +8,6 @@ import (
 	"github.com/novabankapp/common.infrastructure/logger"
 	"github.com/novabankapp/wallet.data/constants"
 	"github.com/novabankapp/wallet.data/es/aggregate"
-	"github.com/olivere/elastic/v7/config"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/log"
 )
@@ -19,12 +18,11 @@ type CreateWalletCommandHandler interface {
 
 type createWalletHandler struct {
 	log logger.Logger
-	cfg *config.Config
 	es  es.AggregateStore
 }
 
-func NewCreateWalletHandler(log logger.Logger, cfg *config.Config, es es.AggregateStore) *createWalletHandler {
-	return &createWalletHandler{log: log, cfg: cfg, es: es}
+func NewCreateWalletHandler(log logger.Logger, es es.AggregateStore) *createWalletHandler {
+	return &createWalletHandler{log: log, es: es}
 }
 
 func (c *createWalletHandler) Handle(ctx context.Context, command *CreateWalletCommand) error {

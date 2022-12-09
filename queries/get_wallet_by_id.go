@@ -11,7 +11,6 @@ import (
 	"github.com/novabankapp/wallet.data/constants"
 	"github.com/novabankapp/wallet.data/es/aggregate"
 	"github.com/novabankapp/wallet.data/es/models"
-	"github.com/olivere/elastic/v7/config"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/log"
 )
@@ -22,15 +21,14 @@ type GetWalletByIDQueryHandler interface {
 
 type getWalletByIDHandler struct {
 	log  logger.Logger
-	cfg  *config.Config
 	es   es.AggregateStore
 	repo base.NoSqlRepository[models.WalletProjection]
 }
 
-func NewGetWalletByIDHandler(log logger.Logger, cfg *config.Config,
+func NewGetWalletByIDHandler(log logger.Logger,
 	es es.AggregateStore,
 	repo base.NoSqlRepository[models.WalletProjection]) *getWalletByIDHandler {
-	return &getWalletByIDHandler{log: log, cfg: cfg, es: es, repo: repo}
+	return &getWalletByIDHandler{log: log, es: es, repo: repo}
 }
 
 func (q *getWalletByIDHandler) Handle(ctx context.Context, query *GetWalletByIDQuery) (*dtos.WalletProjectionDto, error) {

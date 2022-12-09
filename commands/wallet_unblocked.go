@@ -23,8 +23,8 @@ type unBlockWalletHandler struct {
 	es  es.AggregateStore
 }
 
-func NewUnblockWalletHandler(log logger.Logger, cfg *config.Config, es es.AggregateStore) *unBlockWalletHandler {
-	return &unBlockWalletHandler{log: log, cfg: cfg, es: es}
+func NewUnblockWalletHandler(log logger.Logger, es es.AggregateStore) *unBlockWalletHandler {
+	return &unBlockWalletHandler{log: log, es: es}
 }
 
 func (c *unBlockWalletHandler) Handle(ctx context.Context, command *UnblockWalletCommand) error {

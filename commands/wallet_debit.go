@@ -8,7 +8,6 @@ import (
 	"github.com/novabankapp/common.infrastructure/logger"
 	"github.com/novabankapp/wallet.data/constants"
 	"github.com/novabankapp/wallet.data/es/aggregate"
-	"github.com/olivere/elastic/v7/config"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/log"
 )
@@ -19,12 +18,11 @@ type DebitWalletCommandHandler interface {
 
 type debitWalletHandler struct {
 	log logger.Logger
-	cfg *config.Config
 	es  es.AggregateStore
 }
 
-func NewDebitWalletHandler(log logger.Logger, cfg *config.Config, es es.AggregateStore) *debitWalletHandler {
-	return &debitWalletHandler{log: log, cfg: cfg, es: es}
+func NewDebitWalletHandler(log logger.Logger, es es.AggregateStore) *debitWalletHandler {
+	return &debitWalletHandler{log: log, es: es}
 }
 
 func (c *debitWalletHandler) Handle(ctx context.Context, command *DebitWalletCommand) error {
@@ -45,7 +43,7 @@ func (c *debitWalletHandler) Handle(ctx context.Context, command *DebitWalletCom
 
 	if err := wallet.DebitWallet(
 		ctx,
-		creditWallet.Wallet.ID,
+		creditWallet.Wallet.ID.String(),
 		command.Amount,
 		command.Description,
 	); err != nil {

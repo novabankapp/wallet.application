@@ -7,7 +7,6 @@ import (
 	"github.com/novabankapp/wallet.application/commands"
 	"github.com/novabankapp/wallet.application/queries"
 	"github.com/novabankapp/wallet.data/es/models"
-	"github.com/olivere/elastic/v7/config"
 )
 
 type WalletService struct {
@@ -17,23 +16,22 @@ type WalletService struct {
 
 func NewWalletService(
 	log logger.Logger,
-	cfg *config.Config,
 	es es.AggregateStore,
 	repo base.NoSqlRepository[models.WalletProjection],
 	//elasticRepository repository.ElasticOrderRepository,
 ) *WalletService {
 
-	createWalletHandler := commands.NewCreateWalletHandler(log, cfg, es)
-	lockWalletHandler := commands.NewLockWalletHandler(log, cfg, es)
-	unlockWalletHandler := commands.NewUnlockWalletHandler(log, cfg, es)
-	blockWalletHandler := commands.NewBlockWalletHandler(log, cfg, es)
-	unblockWalletHandler := commands.NewUnblockWalletHandler(log, cfg, es)
-	deleteWalletHandler := commands.NewDeleteWalletHandler(log, cfg, es)
-	debitWalletHandler := commands.NewDebitWalletHandler(log, cfg, es)
-	creditWalletHandler := commands.NewCreditWalletHandler(log, cfg, es)
+	createWalletHandler := commands.NewCreateWalletHandler(log, es)
+	lockWalletHandler := commands.NewLockWalletHandler(log, es)
+	unlockWalletHandler := commands.NewUnlockWalletHandler(log, es)
+	blockWalletHandler := commands.NewBlockWalletHandler(log, es)
+	unblockWalletHandler := commands.NewUnblockWalletHandler(log, es)
+	deleteWalletHandler := commands.NewDeleteWalletHandler(log, es)
+	debitWalletHandler := commands.NewDebitWalletHandler(log, es)
+	creditWalletHandler := commands.NewCreditWalletHandler(log, es)
 
-	getWalletByIDHandler := queries.NewGetWalletByIDHandler(log, cfg, es, repo)
-	getUserWalletsHandler := queries.NewGetUserWalletsByIDQueryHandler(log, cfg, es, repo)
+	getWalletByIDHandler := queries.NewGetWalletByIDHandler(log, es, repo)
+	getUserWalletsHandler := queries.NewGetUserWalletsByIDQueryHandler(log, es, repo)
 
 	walletCommands := commands.NewWalletCommands(
 		createWalletHandler,
