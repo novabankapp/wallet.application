@@ -38,11 +38,11 @@ func (c *createWalletHandler) Handle(ctx context.Context, command *CreateWalletC
 
 	if err := wallet.CreateWallet(
 		ctx,
-		command.WalletDetails.Amount,
-		command.WalletDetails.Description,
-		command.WalletDetails.UserId,
-		command.WalletDetails.AccountId,
-		command.WalletDetails.Id,
+		command.CreateWalletEventDetails.Amount,
+		command.CreateWalletEventDetails.Description,
+		command.CreateWalletEventDetails.UserId,
+		command.CreateWalletEventDetails.AccountId,
+		command.CreateWalletEventDetails.EventId,
 	); err != nil {
 		return err
 	}

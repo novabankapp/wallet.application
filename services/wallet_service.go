@@ -24,7 +24,7 @@ func NewWalletService(
 	repo base.NoSqlRepository[models.WalletProjection],
 	topics *kafkaClient.KafkaTopics,
 	messageQueue message_queue.MessageQueue,
-//elasticRepository repository.ElasticOrderRepository,
+	//elasticRepository repository.ElasticOrderRepository,
 ) *WalletService {
 
 	createWalletHandler := commands.NewCreateWalletHandler(log, es)

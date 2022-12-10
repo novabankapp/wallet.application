@@ -5,27 +5,29 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type WalletDetails struct {
+type CreateWalletEventDetails struct {
 	Amount      decimal.Decimal
 	Description string
 	UserId      string
 	AccountId   string
-	Id          string
+	EventId     string
 }
 type CreateWalletCommand struct {
 	es.BaseCommand
-	WalletDetails WalletDetails
+	CreateWalletEventDetails CreateWalletEventDetails
 }
 
 func NewCreateWalletCommand(aggregateID string, amount decimal.Decimal,
-	description, userId, accountId, id string) *CreateWalletCommand {
-	return &CreateWalletCommand{BaseCommand: es.NewBaseCommand(aggregateID), WalletDetails: WalletDetails{
-		amount,
-		description,
-		userId,
-		accountId,
-		id,
-	}}
+	description, userId, accountId, eventId string) *CreateWalletCommand {
+	return &CreateWalletCommand{
+		BaseCommand: es.NewBaseCommand(aggregateID),
+		CreateWalletEventDetails: CreateWalletEventDetails{
+			amount,
+			description,
+			userId,
+			accountId,
+			eventId,
+		}}
 }
 
 type LockWalletCommand struct {
